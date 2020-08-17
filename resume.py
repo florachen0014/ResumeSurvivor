@@ -76,7 +76,7 @@ def extract_text_from_pdf(pdf_path):
                     converter = TextConverter(
                         resource_manager,
                         fake_file_handle,
-                        codec='utf-8',
+                        # codec='utf-8',
                         laparams=LAParams()
                     )
                     page_interpreter = PDFPageInterpreter(
@@ -106,7 +106,7 @@ def extract_text_from_pdf(pdf_path):
                 converter = TextConverter(
                     resource_manager,
                     fake_file_handle,
-                    codec='utf-8',
+                    # codec='utf-8',
                     laparams=LAParams()
                 )
                 page_interpreter = PDFPageInterpreter(
@@ -232,7 +232,8 @@ def extract_skills(resume_text):
         if token in skills:
             skillset.append(token)
     
-    return str(skillset)
+    # return str(skillset)
+    return skillset
 
 
 #skills=extract_skills(text)
@@ -338,51 +339,78 @@ def extract_city(text_data):
 
 """Entitites"""
 RESUME_SECTIONS_GRAD = [
-                    'work experience',
-                    'experience',
-                    'accomplishments',
-                    'WORK EXPERIENCE',
-                    'experience',
-                    'education',
-                    'interests',
-                    'projects',
-                    'professional experience',
-                    'publications',
-                    'skills',
-                    'certifications',
+                    #objective
                     'objective',
                     'career objective',
+                    #summary
                     'summary',
+                    #experience
+                    'experience',
+                    'work experience',
+                    'professional experience',
+                    #accomplishments
+                    'accomplishments',
+                    #education
+                    'education',
+                    #interests
+                    'interests',
+                    #projects
+                    'projects',
+                    #publications
+                    'publications',
+                    #skills
+                    'skills',
+                    'certifications',
+                    #leadership
                     'leadership'
-                    
                 ]
 
-
 def extract_entity_sections_grad(text):
+    '''
+    Helper function to extract resume sections from resumes.
+    :param text: Raw text of resume
+    :return: dictionary of entities
+    '''
+    text_split = [re.sub('[^A-Za-z]',' ',i.lower()).strip() for i in res.split('\n')]
+    text_split = [i for i in text_split if i != '']
+    sections = []
+    for line in text_split:
+        if line in RESUME_SECTIONS_GRAD:
+            sections.append((line, text_split.index(line)))
+    res_sec = {}
+    for i in range(0,len(sections)):
+        sec = sections[i]
+        if i == len(sections)-1:
+            res_sec[sec[0]] = text_split[sec[1]+1:]
+        else:
+            res_sec[sec[0]] = text_split[sec[1]+1:sections[i+1][1]]
+    return res_sec
+
+# def extract_entity_sections_grad(text):
     '''
     Helper function to extract all the raw text from sections of
     resume specifically for graduates and undergraduates
     :param text: Raw text of resume
     :return: dictionary of entities
     '''
-    text_split = [i.strip() for i in text.split('\n')]
-    # sections_in_resume = [i for i in text_split if i.lower() in sections]
-    entities = {}
-    key = False
-    for phrase in text_split:
-        if len(phrase) == 1:
-            p_key = phrase
-        else:
-            p_key = set(phrase.lower().split()) & set(RESUME_SECTIONS_GRAD)
-        try:
-            p_key = list(p_key)[0]
-        except IndexError:
-            pass
-        if p_key in RESUME_SECTIONS_GRAD:
-            entities[p_key] = []
-            key = p_key
-        elif key and phrase.strip():
-            entities[key].append(phrase)
+    # text_split = [i.strip() for i in text.split('\n')]
+    # # sections_in_resume = [i for i in text_split if i.lower() in sections]
+    # entities = {}
+    # key = False
+    # for phrase in text_split:
+    #     if len(phrase) == 1:
+    #         p_key = phrase
+    #     else:
+    #         p_key = set(phrase.lower().split()) & set(RESUME_SECTIONS_GRAD)
+    #     try:
+    #         p_key = list(p_key)[0]
+    #     except IndexError:
+    #         pass
+    #     if p_key in RESUME_SECTIONS_GRAD:
+    #         entities[p_key] = []
+    #         key = p_key
+    #     elif key and phrase.strip():
+    #         entities[key].append(phrase)
 
     # entity_key = False
     # for entity in entities.keys():
@@ -401,7 +429,7 @@ def extract_entity_sections_grad(text):
     # for entity in cs.RESUME_SECTIONS:
     #     if entity not in entities.keys():
     #         entities[entity] = None
-    return (entities)
+    # return (entities)
 
 
 
@@ -470,6 +498,9 @@ f.write(headers)
 def process(file):
     # Store the resume in a variable
     text=extract_text(file)
+    # Remove non ASCII characters
+    text = text.encode('ascii', 'ignore').decode()
+
     email=extract_email(text)
     
     
