@@ -7,6 +7,7 @@ from nltk.tokenize import word_tokenize
 
 import requests
 from bs4 import BeautifulSoup
+import resume
 
 def get_url(job_name, location):
     job_name = job_name.replace(' ','%20')
@@ -50,7 +51,6 @@ def get_pages(url):
 
 def get_description(job):
     qual_list = ['requirements','qualifications','required ','what you ll']
-    job = re.sub(r'<.+?>','\n',str(job))
     description = []
     for p in job.split('\n'):
         description += [re.sub('[^A-Za-z]',' ',s).strip().lower() for s in sent_tokenize(p)]
@@ -65,6 +65,9 @@ def get_description(job):
     job_description = ' '.join(description[:end_index])
     return job_description
 
+def get_skills(job):
+	return '|'.join(resume.extract_skills(job))
+
 def get_jobs(url, limit = 999):
     try:
         count = 0
@@ -73,7 +76,8 @@ def get_jobs(url, limit = 999):
             'company':[],
             'location':[],
             'url':[],
-            'description':[]
+            'description':[],
+            'skills':[]
         }
         pages = get_pages(url)
         for page in pages:
@@ -95,6 +99,7 @@ def get_jobs(url, limit = 999):
                         job_soup = BeautifulSoup(job_page.content,'html.parser')
                         job_description = job_soup.find('div',class_='jobsearch-jobDescriptionText')
                         job_description = str(job_description)
+                        job_description = re.sub(r'<.+?>','\n',str(job_description))
                     else:
                         print('An error occurred when accessing the page for job',job_title)
                     job_dict['title'].append(job_title)
@@ -102,6 +107,7 @@ def get_jobs(url, limit = 999):
                     job_dict['location'].append(location)
                     job_dict['url'].append(job_url)
                     job_dict['description'].append(get_description(job_description))
+                    job_dict['skills'].append(get_skills(job_description))
                 count += 1
         return job_dict
     except:

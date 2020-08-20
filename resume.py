@@ -371,7 +371,7 @@ def extract_entity_sections_grad(text):
     :param text: Raw text of resume
     :return: dictionary of entities
     '''
-    text_split = [re.sub('[^A-Za-z]',' ',i.lower()).strip() for i in res.split('\n')]
+    text_split = [re.sub('[^A-Za-z]',' ',i.lower()).strip() for i in text.split('\n')]
     text_split = [i for i in text_split if i != '']
     sections = []
     for line in text_split:
