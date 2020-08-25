@@ -342,6 +342,7 @@ RESUME_SECTIONS_GRAD = [
                     #objective
                     'objective',
                     'career objective',
+                    'resume objective',
                     #summary
                     'summary',
                     #experience

@@ -35,13 +35,13 @@ def get_page_count(url):
         num_job = re.sub('[A-Za-z]','',pagecount_text[index_of+3:]).strip()
         num_job = int(num_job)
         num_page = int(num_job/10)
-        return num_page
+        return num_page, num_job
     except:
         print('Cannot access the website.')
 
 def get_pages(url):
     try:
-        num_page = get_page_count(url)
+        num_page, num_job = get_page_count(url)
         pages = [url]
         for i in range(1,num_page+1):
             pages.append(url+'&start='+str(i*10))
@@ -77,37 +77,41 @@ def get_jobs(url, limit = 999):
             'location':[],
             'url':[],
             'description':[],
-            'skills':[]
+            'extracted_description':[],
+            'skill':[]
         }
         pages = get_pages(url)
+        num_page, num_job = get_page_count(url)
+        limit = min(limit, num_job)
         for page in pages:
             results = extract_results(page)
             jobs = results.find_all('div',class_='jobsearch-SerpJobCard unifiedRow row result')
             for job in jobs:
-                if count < limit:
-                    job_title = job.find('h2',class_='title')\
-                                .find('a',{'data-tn-element':'jobTitle'}).text.replace('\n','')
-                    job_url = job.find('h2',class_='title')\
-                              .find('a',{'data-tn-element':'jobTitle'})['href']
-                    job_url = 'https://www.indeed.com'+job_url
-                    company = job.find('span',class_='company').text.replace('\n','')
-                    location = job.find('div',class_='recJobLoc')['data-rc-loc'].replace('\n','')
+                if count == limit:
+                    break
+                job_title = job.find('h2',class_='title')\
+                            .find('a',{'data-tn-element':'jobTitle'}).text.replace('\n','')
+                job_url = job.find('h2',class_='title')\
+                          .find('a',{'data-tn-element':'jobTitle'})['href']
+                job_url = 'https://www.indeed.com'+job_url
+                company = job.find('span',class_='company').text.replace('\n','')
+                location = job.find('div',class_='recJobLoc')['data-rc-loc'].replace('\n','')
 
-                    #Access job url page
-                    job_page = requests.get(job_url)
-                    if job_page.status_code == 200:
-                        job_soup = BeautifulSoup(job_page.content,'html.parser')
-                        job_description = job_soup.find('div',class_='jobsearch-jobDescriptionText')
-                        job_description = str(job_description)
-                        job_description = re.sub(r'<.+?>','\n',str(job_description))
-                    else:
-                        print('An error occurred when accessing the page for job',job_title)
-                    job_dict['title'].append(job_title)
-                    job_dict['company'].append(company)
-                    job_dict['location'].append(location)
-                    job_dict['url'].append(job_url)
-                    job_dict['description'].append(get_description(job_description))
-                    job_dict['skills'].append(get_skills(job_description))
+                #Access job url page
+                job_page = requests.get(job_url)
+                if job_page.status_code == 200:
+                    job_soup = BeautifulSoup(job_page.content,'html.parser')
+                    job_description = job_soup.find('div',class_='jobsearch-jobDescriptionText')
+                    job_description = re.sub(r'<.+?>','\n',str(job_description))
+                else:
+                    print('An error occurred when accessing the page for job',job_title)
+                job_dict['title'].append(job_title)
+                job_dict['company'].append(company)
+                job_dict['location'].append(location)
+                job_dict['url'].append(job_url)
+                job_dict['description'].append(job_description)
+                job_dict['extracted_description'].append(get_description(job_description))
+                job_dict['skill'].append(get_skills(job_description))
                 count += 1
         return job_dict
     except:
