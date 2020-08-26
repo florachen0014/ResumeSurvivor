@@ -394,6 +394,26 @@ def extract_entity_sections_grad(text):
     :param text: Raw text of resume
     :return: dictionary of entities
     '''
+    RESUME_SECTIONS_GRAD = [
+                    'work experience',
+                    'experience',
+                    'accomplishments',
+                    'WORK EXPERIENCE',
+                    'experience',
+                    'education',
+                    'interests',
+                    'projects',
+                    'professional experience',
+                    'publications',
+                    'skills',
+                    'certifications',
+                    'objective',
+                    'career objective',
+                    'summary',
+                    'leadership'
+                    
+                ]
+
     text_split = [i.strip() for i in text.split('\n')]
     # sections_in_resume = [i for i in text_split if i.lower() in sections]
     entities = {}

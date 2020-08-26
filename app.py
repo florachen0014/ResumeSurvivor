@@ -53,7 +53,7 @@ def upload_file():
         resume.process(filename)
         df = pd.read_csv('single-resume.csv')
 
-        df = resume_matching.resume_match(filename)
+        # df = resume_matching.resume_match(filename)
         
         columns = df.columns # for a dynamically created table
 
