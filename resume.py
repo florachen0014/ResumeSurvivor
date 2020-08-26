@@ -49,7 +49,7 @@ def extract_text(file_path):
     text = ''
     for page in extract_text_from_pdf(file_path):
             text += ' ' + page
-
+    text = text.encode('ascii', 'ignore').decode()
     return text
 
 
@@ -338,33 +338,7 @@ def extract_city(text_data):
         return "null"
 
 """Entitites"""
-RESUME_SECTIONS_GRAD = [
-                    #objective
-                    'objective',
-                    'career objective',
-                    'resume objective',
-                    #summary
-                    'summary',
-                    #experience
-                    'experience',
-                    'work experience',
-                    'professional experience',
-                    #accomplishments
-                    'accomplishments',
-                    #education
-                    'education',
-                    #interests
-                    'interests',
-                    #projects
-                    'projects',
-                    #publications
-                    'publications',
-                    #skills
-                    'skills',
-                    'certifications',
-                    #leadership
-                    'leadership'
-                ]
+
 
 def extract_entity_sections_grad(text):
     '''
@@ -372,12 +346,37 @@ def extract_entity_sections_grad(text):
     :param text: Raw text of resume
     :return: dictionary of entities
     '''
+    RESUME_SECTIONS_GRAD = {
+    'objective':[
+                'objective',
+                'career objective',
+                'resume objective'
+                ],
+    'summary':['summary'],
+    'experience':[
+                'experience',
+                'work experience',
+                'professional experience'
+                ],
+    'accomplishments':['accomplishment','accomplishments'],
+    'education':['education'],
+    'projects':['projects','selected projects'],
+    'publications':['publications'],
+    'skills':['skills','technical skills','soft skills','certifications'],
+    'interests':['interests'],
+    'leadership':['leadership']
+    }
+    
+    #see which sections are in a resume
     text_split = [re.sub('[^A-Za-z]',' ',i.lower()).strip() for i in text.split('\n')]
     text_split = [i for i in text_split if i != '']
     sections = []
     for line in text_split:
-        if line in RESUME_SECTIONS_GRAD:
-            sections.append((line, text_split.index(line)))
+        for sec, names in RESUME_SECTIONS_GRAD.items():
+            if line in names:
+                sections.append((sec, text_split.index(line)))
+
+    #find resume sections
     res_sec = {}
     for i in range(0,len(sections)):
         sec = sections[i]
@@ -488,12 +487,22 @@ def extract_entities_wih_custom_model(custom_nlp_text):
 
 #cust_ent['work experience']
 
-headers="Name,Email, Phone-no, Links, City, Skills, Education, Degree, Designation, Experience, Projects\n"
-out_filename="single-resume.csv"
-f = open(out_filename, "w")
-f.write(headers)
+# headers="Name,Email, Phone-no, Links, City, Skills, Education, Degree, Designation, Experience, Projects\n"
 
-       
+# f = open(out_filename, "w")
+# f.write(headers)
+
+
+def get_obj_exp(res):
+    res_sec = extract_entity_sections_grad(res)
+
+    obj = ' '.join(res_sec['objective'])
+    exp = ' '.join(res_sec['experience'])
+
+    obj_exp = obj + ' ' + exp
+
+    return obj_exp
+
 
 
 def process(file):
@@ -502,112 +511,125 @@ def process(file):
     # Remove non ASCII characters
     text = text.encode('ascii', 'ignore').decode()
 
-    email=extract_email(text)
-    
+    nf = 'Not Found'
+
+    out_filename="single-resume.csv"
+
+    output_dict ={
+    'Name':nf,
+    'Email':nf,
+    'Phone':nf,
+    'Links':nf,
+    'City':nf,
+    'Skills':nf,
+    'Education':nf,
+    'Degree':nf,
+    'Designation':nf,
+    'Experience':nf,
+    'Projects':nf
+    }
     
     custom_nlp=spacy.load('/app/')
     custom_nlp=custom_nlp(text)
     cust_ent=extract_entities_wih_custom_model(custom_nlp)
             
     entites=extract_entity_sections_grad(text)
+
+    
             
-    name="null"
-    email="null"
-    links="null"
-    city="null"
-    number="null"
-    exp="null"
-    education="null"
-    designation="null"
-    degree="null"
-    projects="null"
+    # name="null"
+    # email="null"
+    # links="null"
+    # city="null"
+    # number="null"
+    # exp="null"
+    # education="null"
+    # designation="null"
+    # degree="null"
+    # projects="null"
+
     
     try:
         name=extract_full_name(nlp(text))
-        if name is None:
-            name="null"
+        output_dict['Name'] = nf if name is None else name
     except (NameError,KeyError,IndexError):
-        name='null'
-        pass           
-
+        pass
+    
     try:
         links=extract_links(text)
-        if links is None:
-            links="null"
+        output_dict['Links'] = nf if links is None else links
     except (KeyError,IndexError):
-        links='null'
-        pass           
+        pass
+
     try:
         email=extract_email(text)
-        if email is None:
-            email="null"
+        output_dict['Email'] = nf if email is None else email
     except (KeyError,IndexError):
         pass
 
     try:
        city=extract_city(text)
-       if city is None:
-            city="null"
+       output_dict['City'] = nf if city is None else city
     except (KeyError,IndexError,TypeError):
-       city='null'
        pass
+
     try:
         skills=extract_skills(text)
-        if skills is None:
-            skills="null"
+        output_dict['Skills'] = nf if skills is None else skills
     except (KeyError,IndexError):
-        skills='null'
-    pass
+        pass
 
     try:
         exp=str(entites['experience'])
-        if exp is None:
-            name="null"
+        output_dict['Experience'] = nf if exp is None else exp
     except (KeyError,IndexError):
-        exp='null'
         pass
+
     try:
-        number=extract_mobile_number(text)
-        if number is None:
-            number="null"
+        phone=extract_mobile_number(text)
+        output_dict['Phone'] = nf if phone is None else phone
     except (UnboundLocalError,KeyError,IndexError):
-        number="null"
         pass
    
     try:
         education=entites['education']
         education=str(education)
-        if education is None:
-            education="null"
+        output_dict['Education'] = nf if education is None else education
     except (KeyError,IndexError):
-        education='null'
         pass
+
     try:
         designation=str(cust_ent['Designation'])
-        #designation=str(cust_ent['Role'])
-        if designation is None:
-            designation="null"
+        output_dict['Designation'] = nf if designation is None else designation
     except (KeyError,IndexError):
-        designation='null'
         pass
+
     try:
         degree=str(cust_ent['Degree'])
-        if degree is None:
-            degree="null"
+        output_dict['Degree'] = nf if degree is None else degree
     except (KeyError,IndexError):
-        degree='null'
         pass
+
     try:
         projects=str(entites['projects'])
-        if projects is None:
-            projects="null"
+        output_dict['Projects'] = nf if projects is None else projects
     except (KeyError,IndexError):
-        projects='null'
         pass    
     
+    pd.DataFrame(output_dict).to_csv(out_filename)
     
-    f.write(name.replace(",","|").replace("\\n","|").replace("\\t","|")+","+email.replace(",","|").replace("\\n","|").replace("\\t","|")+","+number.replace(",","|").replace("\\n","|").replace("\\t","|")+","+links.replace(",","|").replace("\\n","|").replace("\\t","|") +","+city.replace(",","|").replace("\\n","|").replace("\\t","|")+","+skills.replace(",","|").replace("\\n","|").replace("\\t","|")+","+education.replace(",","|").replace("\\n","|").replace("\\t","|")+","+degree.replace(",","|").replace("\\n","|").replace("\\t","|")+","+designation.replace(",","|").replace("\\n","|").replace("\\t","|")+","+exp.replace(",","|").replace("\\n","|").replace("\\t","|")+","+projects.replace(",","|").replace("\\n","|").replace("\\t","|")+"\n")
+    # f.write(
+    #     name.replace(",","|").replace("\\n","|").replace("\\t","|")
+    #     +","+email.replace(",","|").replace("\\n","|").replace("\\t","|")
+    #     +","+number.replace(",","|").replace("\\n","|").replace("\\t","|")
+    #     +","+links.replace(",","|").replace("\\n","|").replace("\\t","|")
+    #     +","+city.replace(",","|").replace("\\n","|").replace("\\t","|")
+    #     +","+skills.replace(",","|").replace("\\n","|").replace("\\t","|")
+    #     +","+education.replace(",","|").replace("\\n","|").replace("\\t","|")
+    #     +","+degree.replace(",","|").replace("\\n","|").replace("\\t","|")
+    #     +","+designation.replace(",","|").replace("\\n","|").replace("\\t","|")
+    #     +","+exp.replace(",","|").replace("\\n","|").replace("\\t","|")+","+projects.replace(",","|").replace("\\n","|").replace("\\t","|")+"\n")
     
-    f.close()
+    # f.close()
 
 

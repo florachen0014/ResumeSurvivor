@@ -1,26 +1,20 @@
 # app.py
 import os
-from flask import *           # import flask
-import resume
-import cosine
-import pdfminer
+import io
+from flask import *
 from flask_uploads import *
-#from werkzeug.utils import secure_filename
-#from werkzeug.middleware.shared_data import SharedDataMiddleware
+
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import SubmitField
 
-import docx2txt
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import os
-from collections import Counter
-
-import io
 from IPython.display import HTML
+
 import pandas as pd
 
+# custom modules
+import resume
+import resume_matching
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'I have a dream'
@@ -49,6 +43,28 @@ def file_download_link(filename):
 
      
 @app.route('/', methods=['GET', 'POST'])
+# def upload_file():
+#     form = UploadForm()
+#     if form.validate_on_submit():
+#         filename = documents.save(form.document.data)
+        
+#         os.path.dirname(os.path.abspath('app.py'))
+#         file_url = documents.url(filename)
+#         resume.process(filename)
+#         df = pd.read_csv('single-resume.csv')
+        
+#         columns = df.columns # for a dynamically created table
+
+#         table_d = df.to_json(orient='index')    
+#         html = HTML(df.to_html())
+#         output = cosine.process(filename)
+
+#         return render_template('index.html',form=form,filename=filename,file_url=file_url,html=html,value=filename,out=output)
+#         return html(file_download_link(filename))
+#     else:
+#         file_url = None
+#     return render_template('index.html', form=form, file_url=file_url)
+
 def upload_file():
     form = UploadForm()
     if form.validate_on_submit():
@@ -56,16 +72,21 @@ def upload_file():
         
         os.path.dirname(os.path.abspath('app.py'))
         file_url = documents.url(filename)
-        resume.process(filename)
-        df = pd.read_csv('single-resume.csv')
+        df_job_rank = resume_match(filename)
         
-        columns = df.columns # for a dynamically created table
 
-        table_d = df.to_json(orient='index')    
-        html = HTML(df.to_html())
-        output = cosine.process(filename)
+        job_rank_html = HTML(df_job_rank.to_html())
+        # output = cosine.process(filename)
 
-        return render_template('index.html',form=form,filename=filename,file_url=file_url,html=html,value=filename,out=output)
+        return render_template(
+            'index.html',
+            form=form,
+            filename=filename,
+            file_url=file_url,
+            html=job_rank_html,
+            value=filename
+            # out=output
+            )
         return html(file_download_link(filename))
     else:
         file_url = None
