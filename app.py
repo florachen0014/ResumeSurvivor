@@ -51,20 +51,23 @@ def upload_file():
         
         os.path.dirname(os.path.abspath('app.py'))
         file_url = documents.url(filename)
-        df_job_rank = resume_match(filename)
+        df = resume_match(filename)
         
-
-        job_rank_html = HTML(df_job_rank.to_html())
+        table_d = df.to_json(orient='index')    
+        html = HTML(df.to_html())
         # output = cosine.process(filename)
+        columns = df.columns
+
+        output='Finished.'
 
         return render_template(
             'index.html',
             form=form,
             filename=filename,
             file_url=file_url,
-            html=job_rank_html,
-            value=filename
-            # out=output
+            html=html,
+            value=filename,
+            out=output
             )
         return html(file_download_link(filename))
     else:
