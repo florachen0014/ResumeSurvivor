@@ -50,10 +50,10 @@ def upload_file():
         
         os.path.dirname(os.path.abspath('app.py'))
         file_url = documents.url(filename)
-        resume.process(filename)
-        df = pd.read_csv('single-resume.csv')
+        # resume.process(filename)
+        # df = pd.read_csv('single-resume.csv')
 
-        # df = resume_matching.resume_match(filename)
+        df = resume_matching.resume_match(filename)
         
         columns = df.columns # for a dynamically created table
 
