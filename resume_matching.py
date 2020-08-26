@@ -5,7 +5,7 @@ import os
 
 # custom modules
 import resume
-import indeed_job_scraper as indeed
+# import indeed_job_scraper as indeed
 
 #dataframe
 import pandas as pd
