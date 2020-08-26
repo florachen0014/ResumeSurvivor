@@ -340,13 +340,13 @@ def extract_city(text_data):
 """Entitites"""
 
 
-def extract_entity_sections_grad(text):
+def extract_entity_sections(text):
     '''
     Helper function to extract resume sections from resumes.
     :param text: Raw text of resume
     :return: dictionary of entities
     '''
-    RESUME_SECTIONS_GRAD = {
+    RESUME_SECTIONS = {
     'objective':[
                 'objective',
                 'career objective',
@@ -372,7 +372,7 @@ def extract_entity_sections_grad(text):
     text_split = [i for i in text_split if i != '']
     sections = []
     for line in text_split:
-        for sec, names in RESUME_SECTIONS_GRAD.items():
+        for sec, names in RESUME_SECTIONS.items():
             if line in names:
                 sections.append((sec, text_split.index(line)))
 
@@ -386,78 +386,33 @@ def extract_entity_sections_grad(text):
             res_sec[sec[0]] = text_split[sec[1]+1:sections[i+1][1]]
     return res_sec
 
-# def extract_entity_sections_grad(text):
+
+def extract_entity_sections_grad(text):
     '''
     Helper function to extract all the raw text from sections of
     resume specifically for graduates and undergraduates
     :param text: Raw text of resume
     :return: dictionary of entities
     '''
-    # text_split = [i.strip() for i in text.split('\n')]
-    # # sections_in_resume = [i for i in text_split if i.lower() in sections]
-    # entities = {}
-    # key = False
-    # for phrase in text_split:
-    #     if len(phrase) == 1:
-    #         p_key = phrase
-    #     else:
-    #         p_key = set(phrase.lower().split()) & set(RESUME_SECTIONS_GRAD)
-    #     try:
-    #         p_key = list(p_key)[0]
-    #     except IndexError:
-    #         pass
-    #     if p_key in RESUME_SECTIONS_GRAD:
-    #         entities[p_key] = []
-    #         key = p_key
-    #     elif key and phrase.strip():
-    #         entities[key].append(phrase)
-
-    # entity_key = False
-    # for entity in entities.keys():
-    #     sub_entities = {}
-    #     for entry in entities[entity]:
-    #         if u'\u2022' not in entry:
-    #             sub_entities[entry] = []
-    #             entity_key = entry
-    #         elif entity_key:
-    #             sub_entities[entity_key].append(entry)
-    #     entities[entity] = sub_entities
-
-    # pprint.pprint(entities)
-
-    # make entities that are not found None
-    # for entity in cs.RESUME_SECTIONS:
-    #     if entity not in entities.keys():
-    #         entities[entity] = None
-    # return (entities)
-
-
-
-#entites=extract_entity_sections_grad(text)
-#entites['projects']
-
-"""
-try:
-    coll=entites['College Name']
-except KeyError:
-    pass
-
-
-try:
-    education=entites['education']
-except KeyError:
-    pass
-
-education
-"""
-#string_education=(', '.join(education)).lower()
-#string_education
-
-
-
-
-
-#string_education
+    text_split = [i.strip() for i in text.split('\n')]
+    # sections_in_resume = [i for i in text_split if i.lower() in sections]
+    entities = {}
+    key = False
+    for phrase in text_split:
+        if len(phrase) == 1:
+            p_key = phrase
+        else:
+            p_key = set(phrase.lower().split()) & set(RESUME_SECTIONS_GRAD)
+        try:
+            p_key = list(p_key)[0]
+        except IndexError:
+            pass
+        if p_key in RESUME_SECTIONS_GRAD:
+            entities[p_key] = []
+            key = p_key
+        elif key and phrase.strip():
+            entities[key].append(phrase)
+    return (entities)
 
 
 
@@ -494,7 +449,7 @@ def extract_entities_wih_custom_model(custom_nlp_text):
 
 
 def get_obj_exp(res):
-    res_sec = extract_entity_sections_grad(res)
+    res_sec = extract_entity_sections(res)
 
     obj = ' '.join(res_sec['objective'])
     exp = ' '.join(res_sec['experience'])
@@ -505,131 +460,121 @@ def get_obj_exp(res):
 
 
 
+headers="Name,Email, Phone-no, Links, City, Skills, Education, Degree, Designation, Experience, Projects\n"
+out_filename="single-resume.csv"
+f = open(out_filename, "w")
+f.write(headers)
+
+       
+
+
 def process(file):
     # Store the resume in a variable
     text=extract_text(file)
-    # Remove non ASCII characters
-    text = text.encode('ascii', 'ignore').decode()
-
-    nf = 'Not Found'
-
-    out_filename="single-resume.csv"
-
-    output_dict ={
-    'Name':nf,
-    'Email':nf,
-    'Phone':nf,
-    'Links':nf,
-    'City':nf,
-    'Skills':nf,
-    'Education':nf,
-    'Degree':nf,
-    'Designation':nf,
-    'Experience':nf,
-    'Projects':nf
-    }
+    email=extract_email(text)
+    
     
     custom_nlp=spacy.load('/app/')
     custom_nlp=custom_nlp(text)
     cust_ent=extract_entities_wih_custom_model(custom_nlp)
             
     entites=extract_entity_sections_grad(text)
-
-    
             
-    # name="null"
-    # email="null"
-    # links="null"
-    # city="null"
-    # number="null"
-    # exp="null"
-    # education="null"
-    # designation="null"
-    # degree="null"
-    # projects="null"
-
+    name="null"
+    email="null"
+    links="null"
+    city="null"
+    number="null"
+    exp="null"
+    education="null"
+    designation="null"
+    degree="null"
+    projects="null"
     
     try:
         name=extract_full_name(nlp(text))
-        output_dict['Name'] = nf if name is None else name
+        if name is None:
+            name="null"
     except (NameError,KeyError,IndexError):
-        pass
-    
-    try:
-        links=extract_links(text)
-        output_dict['Links'] = nf if links is None else links
-    except (KeyError,IndexError):
-        pass
+        name='null'
+        pass           
 
     try:
+        links=extract_links(text)
+        if links is None:
+            links="null"
+    except (KeyError,IndexError):
+        links='null'
+        pass           
+    try:
         email=extract_email(text)
-        output_dict['Email'] = nf if email is None else email
+        if email is None:
+            email="null"
     except (KeyError,IndexError):
         pass
 
     try:
        city=extract_city(text)
-       output_dict['City'] = nf if city is None else city
+       if city is None:
+            city="null"
     except (KeyError,IndexError,TypeError):
+       city='null'
        pass
-
     try:
         skills=extract_skills(text)
-        output_dict['Skills'] = nf if skills is None else skills
+        if skills is None:
+            skills="null"
     except (KeyError,IndexError):
-        pass
+        skills='null'
+    pass
 
     try:
         exp=str(entites['experience'])
-        output_dict['Experience'] = nf if exp is None else exp
+        if exp is None:
+            name="null"
     except (KeyError,IndexError):
+        exp='null'
         pass
-
     try:
-        phone=extract_mobile_number(text)
-        output_dict['Phone'] = nf if phone is None else phone
+        number=extract_mobile_number(text)
+        if number is None:
+            number="null"
     except (UnboundLocalError,KeyError,IndexError):
+        number="null"
         pass
    
     try:
         education=entites['education']
         education=str(education)
-        output_dict['Education'] = nf if education is None else education
+        if education is None:
+            education="null"
     except (KeyError,IndexError):
+        education='null'
         pass
-
     try:
         designation=str(cust_ent['Designation'])
-        output_dict['Designation'] = nf if designation is None else designation
+        #designation=str(cust_ent['Role'])
+        if designation is None:
+            designation="null"
     except (KeyError,IndexError):
+        designation='null'
         pass
-
     try:
         degree=str(cust_ent['Degree'])
-        output_dict['Degree'] = nf if degree is None else degree
+        if degree is None:
+            degree="null"
     except (KeyError,IndexError):
+        degree='null'
         pass
-
     try:
         projects=str(entites['projects'])
-        output_dict['Projects'] = nf if projects is None else projects
+        if projects is None:
+            projects="null"
     except (KeyError,IndexError):
+        projects='null'
         pass    
     
-    pd.DataFrame(output_dict).to_csv(out_filename)
     
-    # f.write(
-    #     name.replace(",","|").replace("\\n","|").replace("\\t","|")
-    #     +","+email.replace(",","|").replace("\\n","|").replace("\\t","|")
-    #     +","+number.replace(",","|").replace("\\n","|").replace("\\t","|")
-    #     +","+links.replace(",","|").replace("\\n","|").replace("\\t","|")
-    #     +","+city.replace(",","|").replace("\\n","|").replace("\\t","|")
-    #     +","+skills.replace(",","|").replace("\\n","|").replace("\\t","|")
-    #     +","+education.replace(",","|").replace("\\n","|").replace("\\t","|")
-    #     +","+degree.replace(",","|").replace("\\n","|").replace("\\t","|")
-    #     +","+designation.replace(",","|").replace("\\n","|").replace("\\t","|")
-    #     +","+exp.replace(",","|").replace("\\n","|").replace("\\t","|")+","+projects.replace(",","|").replace("\\n","|").replace("\\t","|")+"\n")
+    f.write(name.replace(",","|").replace("\\n","|").replace("\\t","|")+","+email.replace(",","|").replace("\\n","|").replace("\\t","|")+","+number.replace(",","|").replace("\\n","|").replace("\\t","|")+","+links.replace(",","|").replace("\\n","|").replace("\\t","|") +","+city.replace(",","|").replace("\\n","|").replace("\\t","|")+","+skills.replace(",","|").replace("\\n","|").replace("\\t","|")+","+education.replace(",","|").replace("\\n","|").replace("\\t","|")+","+degree.replace(",","|").replace("\\n","|").replace("\\t","|")+","+designation.replace(",","|").replace("\\n","|").replace("\\t","|")+","+exp.replace(",","|").replace("\\n","|").replace("\\t","|")+","+projects.replace(",","|").replace("\\n","|").replace("\\t","|")+"\n")
     
-    # f.close()
-
-
+    f.close()
