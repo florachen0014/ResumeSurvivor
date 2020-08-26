@@ -59,7 +59,8 @@ def upload_file():
 
         table_d = df.to_json(orient='index')    
         html = HTML(df.to_html())
-        output = cosine.process(filename)
+        # output = cosine.process(filename)
+        output='Finished.'
 
         return render_template('index.html',form=form,filename=filename,file_url=file_url,html=html,value=filename,out=output)
         return html(file_download_link(filename))
