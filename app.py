@@ -62,9 +62,9 @@ def search():
 def upload():
     if request.method == 'POST':
         file = request.files['resume']
-        currdir = os.path.dirname(__file__)
+        basedir = os.path,abspath(os.path.dirname(__file__))
         filedir = os.path.join(
-            currdir, 'uploads', secure_filename(file.filename))
+            basedir, 'uploads', secure_filename(file.filename))
         file.save(filedir)
         df = resume_matching.resume_match(filedir)
         html = HTML(df.to_html())
