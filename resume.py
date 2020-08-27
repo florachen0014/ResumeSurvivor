@@ -333,7 +333,7 @@ def extract_city(text_data):
     doc = nlp(text_data)
     for ents in doc.ents:
         if(ents.label_ == 'GPE'):
-            return (ents.text)	
+            return (ents.text)
     else:
         return "null"
 

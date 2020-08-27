@@ -57,10 +57,17 @@ def search():
             location = location
             )
 
-# @app.route('/upload', methods=['GET', 'POST'])
-# def upload():
-#     if request.method == 'POST':
-#         f = 
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'POST':
+        file = request.files['resume']
+        df = resume_matching.resume_match(file)
+        html = HTML(df.to_html())
+        return render_template(
+            'upload.html',
+            html=html
+            )
+
 # def upload_file():
 #     form = UploadForm()
 #     if form.validate_on_submit():

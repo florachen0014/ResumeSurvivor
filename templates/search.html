@@ -1,7 +1,28 @@
 <!DOCTYPE html>
 <html>  
+<style>
+    form {
+        margin: auto;
+        width: 35%;
+    }
+</style>
+
+<head>
+
 <body>       
-<p>{{job_title}}</p>   
-<p> {{location}}</p> 
+<h1 style="font-family: arial; text-align: center">Resume Survivor</h1>
+<h2 style="font-family: arial; text-align: center">Your search is:</h2>
+<p style="font-family: arial; text-align: center">Job Title: {{job_title}}</p>
+<p style="font-family: arial; text-align: center">Location: {{location}}</p>
+<br>
+<form action="/upload" method="POST" enctype="multipart/form-data">
+	<input type="file" class="btn" name="resume"
+	style="font-family: arial;" required>
+	<input type="submit" class="btn" 
+	style="font-family: arial;">
+</form>
+
 </body>
+
+</head>
 </html>
