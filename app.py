@@ -63,7 +63,7 @@ def upload():
         file = request.files['resume']
         currdir = os.path.dirname(__file__)
         filedir = os.path.join(
-            currdir, 'uploads', secure_filename(f.filename))
+            currdir, 'uploads', secure_filename(file.filename))
         file.save(filedir)
         df = resume_matching.resume_match(filedir)
         html = HTML(df.to_html())
