@@ -62,7 +62,7 @@ def search():
 def upload():
     if request.method == 'POST':
         file = request.files['resume']
-        basedir = os.path,abspath(os.path.dirname(__file__))
+        basedir = os.path.abspath(os.path.dirname(__file__))
         filedir = os.path.join(
             basedir, 'uploads', secure_filename(file.filename))
         file.save(filedir)
