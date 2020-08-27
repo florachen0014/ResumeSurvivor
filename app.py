@@ -73,6 +73,8 @@ def upload_file():
         file_url = None
     return render_template('index.html', form=form, file_url=file_url)
 
+def main():
+    return 0
 
 
 '''
