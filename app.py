@@ -61,7 +61,11 @@ def search():
 def upload():
     if request.method == 'POST':
         file = request.files['resume']
-        df = resume_matching.resume_match(file)
+        currdir = os.path.dirname(__file__)
+        filedir = os.path.join(
+            currdir, 'uploads', secure_filename(f.filename))
+        file.save(filedir)
+        df = resume_matching.resume_match(filedir)
         html = HTML(df.to_html())
         return render_template(
             'upload.html',
