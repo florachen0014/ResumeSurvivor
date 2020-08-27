@@ -3,6 +3,7 @@ import os
 import io
 from flask import *
 from flask_uploads import *
+from werkzeug.utils import secure_filename
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
@@ -71,6 +72,10 @@ def upload():
             'upload.html',
             html=html
             )
+
+@app.route('/upload/<filename>')
+def send_file(filename):
+    return send_from_directory('uploads',filename)
 
 # def upload_file():
 #     form = UploadForm()
