@@ -8,16 +8,24 @@
 </style>
 
 <head>
-	<title>
-		
-
-
-	</title>
+	<!-- <title> -->
+	<!-- </title> -->
 </head>
 <body>
 <h1 style="font-family:arial;"><center>Resume Upload</center></h1>
 <p style="font-family:arial;"><center>Upload your resume as PDF.</center></p>
 <form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {{ form.document }}
+    {% for error in form.document.errors %}
+        <span style="color: red;">{{ error }}</span>
+    {% endfor %}
+    {{ form.submit }}
+</form>
+
+<br>
+
+<form action="{{ url_for('main') }}" method="POST">
     <fieldset>
         <legend>Input values:</legend>
         Temperature:
@@ -32,14 +40,7 @@
         <br>
         <input type="submit">
     </fieldset>
-    {{ form.hidden_tag() }}
-    {{ form.document }}
-    {% for error in form.document.errors %}
-        <span style="color: red;">{{ error }}</span>
-    {% endfor %}
-    {{ form.submit }}
 </form>
-
 
 {% if file_url %}
 <br>
