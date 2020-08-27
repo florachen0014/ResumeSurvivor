@@ -387,52 +387,52 @@ def extract_entity_sections(text):
     return res_sec
 
 
-def extract_entity_sections_grad(text):
-    '''
-    Helper function to extract all the raw text from sections of
-    resume specifically for graduates and undergraduates
-    :param text: Raw text of resume
-    :return: dictionary of entities
-    '''
-    RESUME_SECTIONS_GRAD = [
-                    'work experience',
-                    'experience',
-                    'accomplishments',
-                    'WORK EXPERIENCE',
-                    'experience',
-                    'education',
-                    'interests',
-                    'projects',
-                    'professional experience',
-                    'publications',
-                    'skills',
-                    'certifications',
-                    'objective',
-                    'career objective',
-                    'summary',
-                    'leadership'
+# def extract_entity_sections_grad(text):
+#     '''
+#     Helper function to extract all the raw text from sections of
+#     resume specifically for graduates and undergraduates
+#     :param text: Raw text of resume
+#     :return: dictionary of entities
+#     '''
+#     RESUME_SECTIONS_GRAD = [
+#                     'work experience',
+#                     'experience',
+#                     'accomplishments',
+#                     'WORK EXPERIENCE',
+#                     'experience',
+#                     'education',
+#                     'interests',
+#                     'projects',
+#                     'professional experience',
+#                     'publications',
+#                     'skills',
+#                     'certifications',
+#                     'objective',
+#                     'career objective',
+#                     'summary',
+#                     'leadership'
                     
-                ]
+#                 ]
 
-    text_split = [i.strip() for i in text.split('\n')]
-    # sections_in_resume = [i for i in text_split if i.lower() in sections]
-    entities = {}
-    key = False
-    for phrase in text_split:
-        if len(phrase) == 1:
-            p_key = phrase
-        else:
-            p_key = set(phrase.lower().split()) & set(RESUME_SECTIONS_GRAD)
-        try:
-            p_key = list(p_key)[0]
-        except IndexError:
-            pass
-        if p_key in RESUME_SECTIONS_GRAD:
-            entities[p_key] = []
-            key = p_key
-        elif key and phrase.strip():
-            entities[key].append(phrase)
-    return (entities)
+#     text_split = [i.strip() for i in text.split('\n')]
+#     # sections_in_resume = [i for i in text_split if i.lower() in sections]
+#     entities = {}
+#     key = False
+#     for phrase in text_split:
+#         if len(phrase) == 1:
+#             p_key = phrase
+#         else:
+#             p_key = set(phrase.lower().split()) & set(RESUME_SECTIONS_GRAD)
+#         try:
+#             p_key = list(p_key)[0]
+#         except IndexError:
+#             pass
+#         if p_key in RESUME_SECTIONS_GRAD:
+#             entities[p_key] = []
+#             key = p_key
+#         elif key and phrase.strip():
+#             entities[key].append(phrase)
+#     return (entities)
 
 
 

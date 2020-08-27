@@ -16,11 +16,12 @@ import pandas as pd
 # custom modules
 import resume
 import resume_matching
+import indeed_job_scraper as indeed
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'I have a dream'
-app.config['UPLOADED_DOCUMENTS_DEST'] = './'
-filename="single-resume.csv"
+# app.config['SECRET_KEY'] = 'I have a dream'
+# app.config['UPLOADED_DOCUMENTS_DEST'] = './'
+# filename="single-resume.csv"
 
 documents = UploadSet('documents', ALL)
 configure_uploads(app, documents)
@@ -28,9 +29,9 @@ patch_request_class(app)  # set maximum file size, default is 16MB
 
 
 
-class UploadForm(FlaskForm):
-    document = FileField(validators=[FileRequired()])
-    submit = SubmitField(u'Upload')
+# class UploadForm(FlaskForm):
+#     document = FileField(validators=[FileRequired()])
+#     submit = SubmitField(u'Upload')
 
 @app.route("/download/<path:path>")
 def download(path):
@@ -45,18 +46,37 @@ def file_download_link(filename):
      
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    return render_template('index.html')
+    return render_template(
+        'index.html',
+        error=''
+        )
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
         job_title = request.form['job_title']
         location = request.form['location']
+
+        job_dict = indeed.get_indeed_job(job_title, location)
+
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        jobdir = os.path.join(
+            basedir, 'job_posting', 'job_posting.csv')
+
+        job_df = pd.DataFrame(job_dict)
+        job_df.to_csv(job_dir, index=False)
+
         return render_template(
             'search.html',
             job_title = job_title,
             location = location
             )
+    else:
+        return render_template(
+            'index.html',
+            error='An error occurred in searching for job postings.\nPlease enter the search keywords again.'
+            )
+
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -66,46 +86,26 @@ def upload():
         filedir = os.path.join(
             basedir, 'uploads', secure_filename(file.filename))
         file.save(filedir)
-        df = resume_matching.resume_match(filedir)
+
+        jobdir = os.path.join(
+            basedir, 'job_posting', 'job_posting.csv')
+
+        df = resume_matching.resume_match(filedir,job_dir)
+        
         html = HTML(df.to_html())
         return render_template(
             'upload.html',
             html=html
             )
+    else:
+        return render_template(
+            'index.html',
+            error='An error occurred in uploading resume.\nPlease enter the search keywords again.'
+            )
 
 @app.route('/upload/<filename>')
 def send_file(filename):
     return send_from_directory('uploads',filename)
-
-# def upload_file():
-#     form = UploadForm()
-#     if form.validate_on_submit():
-#         filename = documents.save(form.document.data)
-        
-#         os.path.dirname(os.path.abspath('app.py'))
-#         file_url = documents.url(filename)
-
-#         df = resume_matching.resume_match(filename)
-        
-#         columns = df.columns # for a dynamically created table
-
-#         table_d = df.to_json(orient='index')    
-#         html = HTML(df.to_html())
-#         # output = cosine.process(filename)
-#         output='Finished.'
-
-#         return render_template(
-#             'index.html',
-#             form=form,
-#             filename=filename,
-#             file_url=file_url,html=html,
-#             value=filename#,
-#             # out=output
-#             )
-#         return html(file_download_link(filename))
-#     else:
-#         file_url = None
-#     return render_template('index.html', form=form, file_url=file_url)
 
 
 

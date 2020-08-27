@@ -60,19 +60,21 @@ def skill_score(res_skills, skills):
     return percent_skills
 
 
-def resume_match(file):
+def resume_match(filedir, jobdir):
     #Extract resume
-    res = resume.extract_text(file)
+    res = resume.extract_text(filedir)
     obj_exp = resume.get_obj_exp(res)
     res_skills = resume.extract_skills(res)
     
-    #get job
-    # job_dict = indeed.get_indeed_job(job_title,location)
-    
-    #Use data scientist at Irvine as test
-    job_df = pd.read_csv('indeed_job_data_scientist_irvine.csv')
+    #get job postings
+    job_df = pd.read_csv(jobdir)
     job_df = job_df.dropna().drop_duplicates()
     job_dict = job_df.to_dict(orient='list')
+    
+    #Use data scientist at Ivine as test
+    # job_df = pd.read_csv('indeed_job_data_scientist_irvine.csv')
+    # job_df = job_df.dropna().drop_duplicates()
+    # job_dict = job_df.to_dict(orient='list')
 
     comp_text = [obj_exp] + job_dict['description']
     corpus = [preprocess(txt) for txt in comp_text]
@@ -85,14 +87,21 @@ def resume_match(file):
     sim_mat = SparseTermSimilarityMatrix(sim_index, dictionary,
                                      tfidf,
                                      nonzero_limit=100)
-    
 
-    job_score = {'job':[],'word2vec':[],'tfidf_vectorizer':[],'company':[],'description':[],'skills':[],'skill_score':[]}
-    for i in range(0,len(job_dict['title'])):
-        job_score['job'].append(job_dict['title'][i])
-        
+    job_score = {
+                'word2vec':[],
+                'tfidf_vectorizer':[],
+                'skills':[],
+                'skill_score':[]
+                }
+
+    for i in range(0,len(job_dict['title'])):       
         #word2vec
-        similarity = sim_mat.inner_product(text_process[0], text_process[i+1], normalized=True)
+        similarity = sim_mat.inner_product(
+        	                 text_process[0],
+        	                 text_process[i+1],
+        	                 normalized=True
+        	                 )
         job_score['word2vec'].append(similarity)
         
         #tfidf vectorizer
@@ -100,8 +109,6 @@ def resume_match(file):
         tv_fit = tv.fit_transform([obj_exp, job_dict['description'][i]])
         job_score['tfidf_vectorizer'].append(cosine_similarity(tv_fit)[0][1])
         
-        job_score['company'].append(job_dict['company'][i])
-        job_score['description'].append(job_dict['description'][i])
         job_score['skills'].append(job_dict['skill'][i])
         job_score['skill_score'].append(skill_score(res_skills, job_dict['skill'][i]))
         
@@ -111,8 +118,12 @@ def resume_match(file):
                        + (job_score_df.tfidf_vectorizer / job_score_df.tfidf_vectorizer.max())
                        + (job_score_df.skill_score / job_score_df.skill_score.max())
                          )
-    job_score_df = job_score_df.sort_values(by='score',ascending=False).reset_index(drop=True)
 
-    return job_score_df[['job','company','description']]
+    #generate final output
+    job_df.description = job_df.description.str.replace('\n',' ')
+    job_final = job_df.join(job_score_df)
+    job_final = job_final.sort_values(by='score',ascending=False).reset_index(drop=True)
+
+    return job_final[['title','company','location','url','description']]
 
 
