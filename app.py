@@ -44,6 +44,9 @@ def file_download_link(filename):
      
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
+    temperature = request.form['temperature']
+    humidity = request.form['humidity']
+    windspeed = request.form['windspeed']
     form = UploadForm()
     if form.validate_on_submit():
         filename = documents.save(form.document.data)
