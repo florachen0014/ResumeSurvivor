@@ -5,10 +5,6 @@ from flask import *
 from flask_uploads import *
 from werkzeug.utils import secure_filename
 
-from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import SubmitField
-
 from IPython.display import HTML
 
 import pandas as pd
@@ -91,7 +87,7 @@ def upload():
             basedir, 'job_posting', 'job_posting.csv')
 
         df = resume_matching.resume_match(filedir,job_dir)
-        
+
         html = HTML(df.to_html())
         return render_template(
             'upload.html',
