@@ -105,7 +105,7 @@ def get_jobs(url, limit = 999):
                     job_description = job_soup.find('div',class_='jobsearch-jobDescriptionText')
                     job_description = re.sub(r'<.+?>','\n',str(job_description))
                 else:
-                    
+                    job_description = 'Cannot access the website.'
                 job_dict['title'].append(job_title)
                 job_dict['company'].append(company)
                 job_dict['location'].append(location)
