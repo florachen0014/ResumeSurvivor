@@ -49,8 +49,8 @@ def main():
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
-        job_title = flask.request.form['job_title']
-        location = flask.request.form['location']
+        job_title = request.form['job_title']
+        location = request.form['location']
         return render_template(
             'search.html',
             job_title = job_title,
