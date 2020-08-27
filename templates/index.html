@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <html>
+<style>
+    form {
+        margin: auto;
+        width: 35%;
+    }
+</style>
+
 <head>
 	<title>
 		
@@ -8,7 +15,8 @@
 	</title>
 </head>
 <body>
-<h1>Resume Upload</h1>
+<h1><center>Resume Upload</center></h1>
+<h2><center>Upload your resume as PDF.</center></h2>
 <form method="POST" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     {{ form.document }}

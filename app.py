@@ -50,8 +50,6 @@ def upload_file():
         
         os.path.dirname(os.path.abspath('app.py'))
         file_url = documents.url(filename)
-        # resume.process(filename)
-        # df = pd.read_csv('single-resume.csv')
 
         df = resume_matching.resume_match(filename)
         
@@ -62,7 +60,14 @@ def upload_file():
         # output = cosine.process(filename)
         output='Finished.'
 
-        return render_template('index.html',form=form,filename=filename,file_url=file_url,html=html,value=filename,out=output)
+        return render_template(
+            'index.html',
+            form=form,
+            filename=filename,
+            file_url=file_url,html=html,
+            value=filename#,
+            # out=output
+            )
         return html(file_download_link(filename))
     else:
         file_url = None
