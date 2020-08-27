@@ -2,7 +2,7 @@
 import os
 import io
 from flask import *
-from flask_uploads import *
+# from flask_uploads import *
 from werkzeug.utils import secure_filename
 
 from IPython.display import HTML
@@ -19,9 +19,9 @@ app = Flask(__name__)
 # app.config['UPLOADED_DOCUMENTS_DEST'] = './'
 # filename="single-resume.csv"
 
-documents = UploadSet('documents', ALL)
-configure_uploads(app, documents)
-patch_request_class(app)  # set maximum file size, default is 16MB
+# documents = UploadSet('documents', ALL)
+# configure_uploads(app, documents)
+# patch_request_class(app)  # set maximum file size, default is 16MB
 
 
 
