@@ -60,7 +60,7 @@ def search():
             basedir, 'job_posting', 'job_posting.csv')
 
         job_df = pd.DataFrame(job_dict)
-        job_df.to_csv(job_dir, index=False)
+        job_df.to_csv(jobdir, index=False)
 
         return render_template(
             'search.html',
