@@ -43,38 +43,54 @@ def file_download_link(filename):
 
      
 @app.route('/', methods=['GET', 'POST'])
-def upload_file():
-    form = UploadForm()
-    if form.validate_on_submit():
-        filename = documents.save(form.document.data)
-        
-        os.path.dirname(os.path.abspath('app.py'))
-        file_url = documents.url(filename)
-
-        df = resume_matching.resume_match(filename)
-        
-        columns = df.columns # for a dynamically created table
-
-        table_d = df.to_json(orient='index')    
-        html = HTML(df.to_html())
-        # output = cosine.process(filename)
-        output='Finished.'
-
-        return render_template(
-            'index.html',
-            form=form,
-            filename=filename,
-            file_url=file_url,html=html,
-            value=filename#,
-            # out=output
-            )
-        return html(file_download_link(filename))
-    else:
-        file_url = None
-    return render_template('index.html', form=form, file_url=file_url)
-
 def main():
-    return 0
+    return render_template('index.html')
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        job_title = flask.request.form['job_title']
+        location = flask.request.form['location']
+        return render_template(
+            'search.html',
+            job_title = job_title,
+            location = location
+            )
+
+# @app.route('/upload', methods=['GET', 'POST'])
+# def upload():
+#     if request.method == 'POST':
+#         f = 
+# def upload_file():
+#     form = UploadForm()
+#     if form.validate_on_submit():
+#         filename = documents.save(form.document.data)
+        
+#         os.path.dirname(os.path.abspath('app.py'))
+#         file_url = documents.url(filename)
+
+#         df = resume_matching.resume_match(filename)
+        
+#         columns = df.columns # for a dynamically created table
+
+#         table_d = df.to_json(orient='index')    
+#         html = HTML(df.to_html())
+#         # output = cosine.process(filename)
+#         output='Finished.'
+
+#         return render_template(
+#             'index.html',
+#             form=form,
+#             filename=filename,
+#             file_url=file_url,html=html,
+#             value=filename#,
+#             # out=output
+#             )
+#         return html(file_download_link(filename))
+#     else:
+#         file_url = None
+#     return render_template('index.html', form=form, file_url=file_url)
+
 
 
 '''
