@@ -14,7 +14,7 @@ import numpy as np
 import re
 
 #nltk
-import nltk.download
+import nltk
 nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
