@@ -93,6 +93,7 @@ def upload():
                          .split(' ')[:100])+'...')
         html = df[['title','company','location','description']]\
                .to_html(index=False,escape=False)
+        html = HTML(html)
 
         return render_template(
             'upload.html',
