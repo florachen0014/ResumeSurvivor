@@ -80,7 +80,7 @@ def skill_score(res_skills, skills):
         common_skills = (res_skills & skills)
         percent_skills = len(common_skills) / len(skills) + 0.5*(len(common_skills) / len(res_skills))
         return percent_skills
-    else:
+    except:
         return 0
 
 
