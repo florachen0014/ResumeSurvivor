@@ -64,8 +64,6 @@ def get_pages(url):
 #     job_description = ' '.join(description[:end_index])
 #     return job_description
 
-def get_skills(job):
-	return '|'.join(resume.extract_skills(job))
 
 def get_jobs(url, limit = 50):
     try:

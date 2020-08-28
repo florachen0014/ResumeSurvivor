@@ -48,6 +48,9 @@ def preprocess(text):
     no_stopwords = [w for w in words if w not in stopwords_list]
     return no_stopwords
 
+def get_skills(job):
+    return '|'.join(resume.extract_skills(job))
+
 def skill_score(res_skills, skills):
     '''
     Measures the percent of skills in the resume that is required by the job
@@ -109,8 +112,10 @@ def resume_match(filedir, jobdir):
         tv_fit = tv.fit_transform([obj_exp, job_dict['description'][i]])
         job_score['tfidf_vectorizer'].append(cosine_similarity(tv_fit)[0][1])
         
-        job_score['skills'].append(job_dict['skill'][i])
-        job_score['skill_score'].append(skill_score(res_skills, job_dict['skill'][i]))
+        #score skills
+        skills = get_skills(job_dict[description][i])
+        job_score['skills'].append(skills)
+        job_score['skill_score'].append(skill_score(res_skills, skill))
         
     job_score_df= pd.DataFrame(job_score)
     job_score_df['score'] = (
