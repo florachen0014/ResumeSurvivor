@@ -3,8 +3,6 @@ import pandas as pd
 import numpy as np
 
 import re
-from nltk.tokenize import sent_tokenize
-from nltk.tokenize import word_tokenize
 
 import requests
 from bs4 import BeautifulSoup
@@ -38,7 +36,7 @@ def get_page_count(url):
         num_page = int(num_job/10)
         return num_page, num_job
     except:
-        print('Cannot access the website.')
+        return 0,0
 
 def get_pages(url):
     try:
@@ -48,28 +46,28 @@ def get_pages(url):
             pages.append(url+'&start='+str(i*10))
         return pages
     except:
-        print('Cannot access the website.')
+        return None
 
-def get_description(job):
-    qual_list = ['requirements','qualifications','required ','what you ll']
-    description = []
-    for p in job.split('\n'):
-        description += [re.sub('[^A-Za-z]',' ',s).strip().lower() for s in sent_tokenize(p)]
-    for desc in description:
-        if any([qual in desc for qual in qual_list]):
-            end_index = description.index(desc)
-            break
-        elif desc == 'skill':
-            end_index = description.index(desc)
-        else:
-            end_index = len(description)
-    job_description = ' '.join(description[:end_index])
-    return job_description
+# def get_description(job):
+#     qual_list = ['requirements','qualifications','required ','what you ll']
+#     description = []
+#     for p in job.split('\n'):
+#         description += [re.sub('[^A-Za-z]',' ',s).strip().lower() for s in sent_tokenize(p)]
+#     for desc in description:
+#         if any([qual in desc for qual in qual_list]):
+#             end_index = description.index(desc)
+#             break
+#         elif desc == 'skill':
+#             end_index = description.index(desc)
+#         else:
+#             end_index = len(description)
+#     job_description = ' '.join(description[:end_index])
+#     return job_description
 
 def get_skills(job):
 	return '|'.join(resume.extract_skills(job))
 
-def get_jobs(url, limit = 999):
+def get_jobs(url, limit = 50):
     try:
         count = 0
         job_dict = {
@@ -77,9 +75,9 @@ def get_jobs(url, limit = 999):
             'company':[],
             'location':[],
             'url':[],
-            'description':[],
+            'description':[]
             # 'extracted_description':[],
-            'skill':[]
+            # 'skill':[]
         }
         pages = get_pages(url)
         num_page, num_job = get_page_count(url)
@@ -112,13 +110,13 @@ def get_jobs(url, limit = 999):
                 job_dict['url'].append(job_url)
                 job_dict['description'].append(job_description)
                 # job_dict['extracted_description'].append(get_description(job_description))
-                job_dict['skill'].append(get_skills(job_description))
+                # job_dict['skill'].append(get_skills(job_description))
                 count += 1
         return job_dict
     except:
         return {'Error':'Cannot access the website.'}
 
-def get_indeed_job(job_name, location, limit = 999):
+def get_indeed_job(job_name, location, limit = 50):
     url = get_url(job_name, location)
     job_dict = get_jobs(url, limit = limit)
     return job_dict
