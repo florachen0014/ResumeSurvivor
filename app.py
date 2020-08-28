@@ -86,7 +86,7 @@ def upload():
         jobdir = os.path.join(
             basedir, 'job_posting', 'job_posting.csv')
 
-        df = resume_matching.resume_match(filedir,job_dir)
+        df = resume_matching.resume_match(filedir,jobdir)
 
         html = HTML(df.to_html())
         return render_template(
