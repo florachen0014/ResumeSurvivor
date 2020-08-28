@@ -17,14 +17,11 @@ def get_url(job_name, location):
 def extract_results(url):
     try:
         page = requests.get(url)
-        if page.status_code == 200:
-            soup = BeautifulSoup(page.content,'html.parser')
-            results = soup.find(id='resultsBody')
-            return results
-        else:
-            print('An error occurred.')
+        soup = BeautifulSoup(page.content,'html.parser')
+        results = soup.find(id='resultsBody')
+        return results
     except:
-        print('Cannot access the website.')
+        return None
 
 def get_page_count(url):
     try:
@@ -97,11 +94,11 @@ def get_jobs(url, limit = 50):
 
                 #Access job url page
                 job_page = requests.get(job_url)
-                if job_page.status_code == 200:
+                try:
                     job_soup = BeautifulSoup(job_page.content,'html.parser')
                     job_description = job_soup.find('div',class_='jobsearch-jobDescriptionText')
                     job_description = re.sub(r'<.+?>','\n',str(job_description))
-                else:
+                except:
                     job_description = 'Cannot access the website.'
                 job_dict['title'].append(job_title)
                 job_dict['company'].append(company)

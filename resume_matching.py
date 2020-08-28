@@ -52,10 +52,16 @@ skill_1 = set(pd.read_csv('skill_1.csv').values)
 skill_2 = set(pd.read_csv('skill_2.csv').values)
 
 def tokenize(res):
+    '''
+    Tokenize the resume.
+    '''
     res = res.lower().replace('\n','')
     return [w for w in word_tokenize(res) if w not in string.punctuation]
 
 def extract_skills(res):
+    '''
+    Extract skills from resume.
+    '''
     skill_set_1 = set(tokenize(res)) & set(skill_1)
     skill_set_2 = []
     for skill in skill_2:
@@ -75,6 +81,14 @@ def skill_score(res_skills, skills):
 
 
 def resume_match(filedir, jobdir):
+    '''
+    Rank scraped job descriptions from Indeed
+    based on the objective and experience section of the resume.
+    The rank is based on 3 criteria:
+    1. Text similarity using Word2Vec
+    2. Text similarity using Count Vectorizer
+    3. Percent of skills in resume that is in the job description
+    '''
     #Extract resume
     res = resume.extract_text(filedir)
     obj_exp = resume.get_obj_exp(res)
