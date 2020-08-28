@@ -48,8 +48,8 @@ def preprocess(text):
     no_stopwords = [w for w in words if w not in stopwords_list]
     return no_stopwords
 
-skill_1 = set(pd.read_csv('skill_1.csv').values)
-skill_2 = set(pd.read_csv('skill_2.csv').values)
+skill_1 = pd.read_csv('skill_1.csv').skill.values.tolist()
+skill_2 = pd.read_csv('skill_2.csv').skill.values.tolist()
 
 def tokenize(res):
     '''
