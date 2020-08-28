@@ -20,8 +20,8 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 #vectorizer
-# from sklearn.feature_extraction.text import TfidfVectorizer
-# from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 #word2vec
 from gensim.models import TfidfModel
@@ -48,8 +48,20 @@ def preprocess(text):
     no_stopwords = [w for w in words if w not in stopwords_list]
     return no_stopwords
 
-def get_skills(job):
-    return '|'.join(resume.extract_skills(job))
+skill_1 = set(pd.read_csv('skill_1.csv').values)
+skill_2 = set(pd.read_csv('skill_2.csv').values)
+
+def tokenize(res):
+    res = res.lower().replace('\n','')
+    return [w for w in word_tokenize(res) if w not in string.punctuation]
+
+def extract_skills(res):
+    skill_set_1 = set(tokenize(res)) & set(skill_1)
+    skill_set_2 = []
+    for skill in skill_2:
+        if skill in res:
+            skill_set_2.append(skill)
+    return skill_set_1 | set(skill_set_2)
 
 def skill_score(res_skills, skills):
     '''
@@ -57,8 +69,7 @@ def skill_score(res_skills, skills):
     and also the percent of skills required that appears in the resume.
     The latter measure helps to exclude jobs that do not list many skills from having a high skill score.
     '''
-    skills = skills.split('|')
-    common_skills = list(set(res_skills) & set(skills))
+    common_skills = (res_skills & skills)
     percent_skills = len(common_skills) / len(skills) + 0.5*(len(common_skills) / len(res_skills))
     return percent_skills
 
@@ -67,7 +78,7 @@ def resume_match(filedir, jobdir):
     #Extract resume
     res = resume.extract_text(filedir)
     obj_exp = resume.get_obj_exp(res)
-    res_skills = resume.extract_skills(res)
+    res_skills = extract_skills(res)
     
     #get job postings
     job_df = pd.read_csv(jobdir)
@@ -92,8 +103,8 @@ def resume_match(filedir, jobdir):
 
     job_score = {
                 'word2vec':[],
-                # 'tfidf_vectorizer':[],
-                'skills':[],
+                'tfidf_vectorizer':[],
+                # 'skills':[],
                 'skill_score':[]
                 }
 
@@ -107,19 +118,17 @@ def resume_match(filedir, jobdir):
         job_score['word2vec'].append(similarity)
         
         #tfidf vectorizer
-        # tv = TfidfVectorizer(use_idf=True, stop_words='english')
-        # tv_fit = tv.fit_transform([obj_exp, job_dict['description'][i]])
-        # job_score['tfidf_vectorizer'].append(cosine_similarity(tv_fit)[0][1])
+        tv = TfidfVectorizer(use_idf=True, stop_words='english')
+        tv_fit = tv.fit_transform([obj_exp, job_dict['description'][i]])
+        job_score['tfidf_vectorizer'].append(cosine_similarity(tv_fit)[0][1])
         
         #score skills
-        skills = get_skills(job_dict['description'][i])
-        job_score['skills'].append(skills)
-        job_score['skill_score'].append(skill_score(res_skills, skills))
+        job_score['skill_score'].append(skill_score(res_skills, extract_skills(job_dict['description'][i]))
         
     job_score_df= pd.DataFrame(job_score)
     job_score_df['score'] = (
                          (job_score_df.word2vec / job_score_df.word2vec.max())
-                       # + (job_score_df.tfidf_vectorizer / job_score_df.tfidf_vectorizer.max())
+                       + (job_score_df.tfidf_vectorizer / job_score_df.tfidf_vectorizer.max())
                        + (job_score_df.skill_score / job_score_df.skill_score.max())
                          )
 
