@@ -123,7 +123,7 @@ def resume_match(filedir, jobdir):
         job_score['tfidf_vectorizer'].append(cosine_similarity(tv_fit)[0][1])
         
         #score skills
-        job_score['skill_score'].append(skill_score(res_skills, extract_skills(job_dict['description'][i]))
+        job_score['skill_score'].append(skill_score(res_skills, extract_skills(job_dict['description'][i])))
         
     job_score_df= pd.DataFrame(job_score)
     job_score_df['score'] = (
