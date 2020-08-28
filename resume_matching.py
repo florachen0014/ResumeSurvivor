@@ -18,6 +18,7 @@ import nltk
 nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+import string
 
 #vectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
