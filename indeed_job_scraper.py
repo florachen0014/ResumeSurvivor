@@ -67,7 +67,7 @@ def get_pages(url):
 def get_skills(job):
 	return '|'.join(resume.extract_skills(job))
 
-def get_jobs(url, limit = 30):
+def get_jobs(url, limit = 50):
     try:
         count = 0
         job_dict = {
@@ -116,7 +116,7 @@ def get_jobs(url, limit = 30):
     except:
         return {'Error':'Cannot access the website.'}
 
-def get_indeed_job(job_name, location, limit = 30):
+def get_indeed_job(job_name, location, limit = 20):
     url = get_url(job_name, location)
     job_dict = get_jobs(url, limit = limit)
     return job_dict
