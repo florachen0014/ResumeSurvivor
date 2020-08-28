@@ -68,7 +68,7 @@ def extract_skills(res):
     for skill in skill_2:
         if skill in res:
             skill_set_2.append(skill)
-    return skill_set_1 | set(skill_set_2)
+    return skill_set_1.update(skill_set_2)
 
 def skill_score(res_skills, skills):
     '''
@@ -76,9 +76,12 @@ def skill_score(res_skills, skills):
     and also the percent of skills required that appears in the resume.
     The latter measure helps to exclude jobs that do not list many skills from having a high skill score.
     '''
-    common_skills = (res_skills & skills)
-    percent_skills = len(common_skills) / len(skills) + 0.5*(len(common_skills) / len(res_skills))
-    return percent_skills
+    if len(skills) = 0:
+        return 0
+    else:
+        common_skills = (res_skills & skills)
+        percent_skills = len(common_skills) / len(skills) + 0.5*(len(common_skills) / len(res_skills))
+        return percent_skills
 
 
 def resume_match(filedir, jobdir):
