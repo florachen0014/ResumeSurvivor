@@ -20,8 +20,8 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 #vectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+# from sklearn.feature_extraction.text import TfidfVectorizer
+# from sklearn.metrics.pairwise import cosine_similarity
 
 #word2vec
 from gensim.models import TfidfModel
@@ -93,7 +93,7 @@ def resume_match(filedir, jobdir):
 
     job_score = {
                 'word2vec':[],
-                'tfidf_vectorizer':[],
+                # 'tfidf_vectorizer':[],
                 'skills':[],
                 'skill_score':[]
                 }
@@ -108,9 +108,9 @@ def resume_match(filedir, jobdir):
         job_score['word2vec'].append(similarity)
         
         #tfidf vectorizer
-        tv = TfidfVectorizer(use_idf=True, stop_words='english')
-        tv_fit = tv.fit_transform([obj_exp, job_dict['description'][i]])
-        job_score['tfidf_vectorizer'].append(cosine_similarity(tv_fit)[0][1])
+        # tv = TfidfVectorizer(use_idf=True, stop_words='english')
+        # tv_fit = tv.fit_transform([obj_exp, job_dict['description'][i]])
+        # job_score['tfidf_vectorizer'].append(cosine_similarity(tv_fit)[0][1])
         
         #score skills
         skills = get_skills(job_dict['description'][i])
@@ -120,7 +120,7 @@ def resume_match(filedir, jobdir):
     job_score_df= pd.DataFrame(job_score)
     job_score_df['score'] = (
                          (job_score_df.word2vec / job_score_df.word2vec.max())
-                       + (job_score_df.tfidf_vectorizer / job_score_df.tfidf_vectorizer.max())
+                       # + (job_score_df.tfidf_vectorizer / job_score_df.tfidf_vectorizer.max())
                        + (job_score_df.skill_score / job_score_df.skill_score.max())
                          )
 
