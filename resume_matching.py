@@ -71,7 +71,6 @@ def resume_match(filedir, jobdir):
     
     #get job postings
     job_df = pd.read_csv(jobdir)
-    job_df = job_df.dropna().drop_duplicates()
     job_dict = job_df.to_dict(orient='list')
     
     #Use data scientist at Ivine as test

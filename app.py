@@ -59,7 +59,7 @@ def search():
         jobdir = os.path.join(
             basedir, 'job_posting', 'job_posting.csv')
 
-        job_df = pd.DataFrame(job_dict)
+        job_df = pd.DataFrame(job_dict).dropna().drop_duplicates()
         job_df.to_csv(jobdir, index=False)
 
         return render_template(
