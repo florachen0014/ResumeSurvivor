@@ -87,8 +87,13 @@ def upload():
             basedir, 'job_posting', 'job_posting.csv')
 
         df = resume_matching.resume_match(filedir,jobdir)
+        df.title = '<a href="'+job_df.url+'">'+job_df.title+'</a>'
+        df.description = job_html.description\
+                         .apply(lambda x : ' '.join(x.replace('\n','')\
+                         .split(' ')[:100])+'...')
+        html = df[['title','company','location','description']]\
+               .to_html(index=False,escape=False)
 
-        html = HTML(df.to_html())
         return render_template(
             'upload.html',
             html=html

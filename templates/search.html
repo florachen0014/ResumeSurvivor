@@ -750,14 +750,12 @@ button,
   input[type="submit"]:hover,
   input[type="reset"]:hover,
   input[type="button"]:hover,
-  input[type="file"]:hover,
   button:hover,
   .button:hover {
     background-color: #1fcaa7; }
   input[type="submit"]:active,
   input[type="reset"]:active,
   input[type="button"]:active,
-  input[type="file"]:active,
   button:active,
   .button:active {
     background-color: #199e83; }
@@ -767,8 +765,6 @@ button,
   input[type="reset"]:disabled,
   input[type="button"].disabled,
   input[type="button"]:disabled,
-  input[type="file"].disabled,
-  input[type="file"]:disabled,
   button.disabled,
   button:disabled,
   .button.disabled,
@@ -778,7 +774,6 @@ button,
     input[type="submit"],
     input[type="reset"],
     input[type="button"],
-    input[type="file"],
     button,
     .button {
       padding: 0; } }
@@ -951,16 +946,15 @@ input[type="file"] {
 
 		<!-- Signup Form -->
 			<h1>Your Search:</h1>
-			<h3>Job Title:</h3>
-			<h3>Job Position:</h3>
+			<h3>Job Title: {{job_title}}</h3>
+			<h3>Location: {{location}}</h3>
 
 			<form id="upload-form" action="/upload"  method="post" enctype="multipart/form-data">
 				<label for="file-upload" class="custom-file-upload">
 					Custom Upload
 				</label>
-				<input id="file-upload"
-				type="file" name="resume" required/>
-				<br><br>
+				<input id="file-upload" type="file" name="resume" required/>
+				<br>
 				<input type="submit" value="Submit" />
 			</form>
 
