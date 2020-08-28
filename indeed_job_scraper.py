@@ -75,9 +75,9 @@ def get_jobs(url, limit = 50):
             'company':[],
             'location':[],
             'url':[],
-            'description':[]
+            'description':[],
             # 'extracted_description':[],
-            # 'skill':[]
+            'skill':[]
         }
         pages = get_pages(url)
         num_page, num_job = get_page_count(url)
@@ -110,7 +110,7 @@ def get_jobs(url, limit = 50):
                 job_dict['url'].append(job_url)
                 job_dict['description'].append(job_description)
                 # job_dict['extracted_description'].append(get_description(job_description))
-                # job_dict['skill'].append(get_skills(job_description))
+                job_dict['skill'].append(get_skills(job_description))
                 count += 1
         return job_dict
     except:
