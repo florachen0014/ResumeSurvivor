@@ -115,7 +115,7 @@ def resume_match(filedir, jobdir):
         #score skills
         skills = get_skills(job_dict['description'][i])
         job_score['skills'].append(skills)
-        job_score['skill_score'].append(skill_score(res_skills, skill))
+        job_score['skill_score'].append(skill_score(res_skills, skills))
         
     job_score_df= pd.DataFrame(job_score)
     job_score_df['score'] = (
