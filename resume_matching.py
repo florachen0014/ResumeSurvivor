@@ -76,7 +76,7 @@ def skill_score(res_skills, skills):
     and also the percent of skills required that appears in the resume.
     The latter measure helps to exclude jobs that do not list many skills from having a high skill score.
     '''
-    if len(skills) = 0:
+    if len(skills) == 0:
         return 0
     else:
         common_skills = (res_skills & skills)
