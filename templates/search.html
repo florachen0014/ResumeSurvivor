@@ -954,15 +954,14 @@ input[type="file"] {
 			<h3>Job Title:</h3>
 			<h3>Job Position:</h3>
 
-			<form id="upload-form" action="/upload"  method="post">
+			<form id="upload-form" action="/upload"  method="post" enctype="multipart/form-data">
 				<label for="file-upload" class="custom-file-upload">
 					Custom Upload
 				</label>
 				<input id="file-upload"
-				type="file" name="resume" class="btn"
-				required/>
+				type="file" name="resume" required/>
 				<br><br>
-				<input type="submit" class="btn" value="Submit" />
+				<input type="submit" value="Submit" />
 			</form>
 
 		<!-- Footer -->
