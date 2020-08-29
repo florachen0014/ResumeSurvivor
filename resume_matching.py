@@ -68,7 +68,7 @@ def extract_skills(res):
     for skill in skill_2:
         if skill in res:
             skill_set_2.append(skill)
-    return skill_set_1.update(skill_set_2)
+    return skill_set_1 | set(skill_set_2)
 
 def skill_score(res_skills, skills):
     '''

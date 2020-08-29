@@ -53,7 +53,7 @@ def search():
         job_title = request.form['job_title']
         location = request.form['location']
 
-        job_dict = indeed.get_indeed_job(job_title, location)
+        job_dict = indeed.get_indeed_job(job_title, location,limit=50)
 
         basedir = os.path.abspath(os.path.dirname(__file__))
         jobdir = os.path.join(
