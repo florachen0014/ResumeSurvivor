@@ -79,7 +79,6 @@ html {
   box-sizing: inherit; }
 
 html, body {
-  height: 100%;
   overflow-x: hidden;
   width: 100%; }
   @media screen and (max-height: 640px) {
@@ -780,7 +779,9 @@ button,
 
 input[type="file"] {
     display: none;
+    height: 2.75em;
 }
+
 .custom-file-upload {
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -796,6 +797,7 @@ input[type="file"] {
   color: #ffffff !important;
   cursor: pointer;
   display: inline-block;
+  font-size: 1em;
   font-weight: 700;
   height: 2.75em;
   line-height: 2.75em;
@@ -884,11 +886,10 @@ input[type="file"] {
   -webkit-transition: opacity 0.5s ease-in-out;
   -ms-transition: opacity 0.5s ease-in-out;
   transition: opacity 0.5s ease-in-out;
-  bottom: 4em;
+  bottom: 0em;
   color: rgba(255, 255, 255, 0.5);
-  left: 4em;
-  opacity: 0.5;
-  position: absolute; }
+  left: 0em;
+  opacity: 0.5; }
   #footer .icons {
     margin: 0 0 0.5em 0; }
   #footer .copyright {
@@ -913,16 +914,16 @@ input[type="file"] {
     margin-bottom: 0; }
   @media screen and (max-width: 1680px) {
     #footer {
-      bottom: 3.5em;
-      left: 3.5em; } }
+      bottom: 0em;
+      left: 0em; } }
   @media screen and (max-width: 736px) {
     #footer {
-      bottom: 2em;
-      left: 2em; } }
+      bottom: 0em;
+      left: 0em; } }
   @media screen and (max-width: 360px) {
     #footer {
-      bottom: 1.25em;
-      left: 1.25em; } }
+      bottom: 0em;
+      left: 0em; } }
   @media screen and (max-height: 640px) {
     #footer {
       bottom: auto;
@@ -944,18 +945,25 @@ input[type="file"] {
 				<h1>Resume Survivor</h1>
 			</header>
 
-		<!-- Signup Form -->
+		<!-- Back Button -->
+			<form action="/">
+				<input type="submit" value="Back" />
+			</form>
+
+		<!-- Display Search Result -->
 			<h2>Your Search:</h2>
 			<h3>Job Title: {{job_title}}</h3>
 			<h3>Location: {{location}}</h3>
 
+		<!-- Submit Form -->
+
 			<form id="upload-form" action="/upload"  method="post" enctype="multipart/form-data">
 				<label for="file-upload" class="custom-file-upload">
-					Custom Upload
+					Upload Resume
 				</label>
 				<input id="file-upload" type="file" name="resume" required/>
 				<br>
-				<input type="submit" value="Submit" />
+				<input type="submit" value="Submit Resume" />
 			</form>
 
 		<!-- Footer -->
