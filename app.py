@@ -91,7 +91,7 @@ def upload():
         df.title = '<a href="'+df.url+'">'+df.title+'</a>'
         df.description = df.description\
                          .apply(lambda x : ' '.join(x.replace('\n','')\
-                         .split(' ')[:30])+'...')
+                         .split(' ')[:50])+'...')
         html = df[['title','company','location','description']].head(10)\
                .to_html(index=False,escape=False)
         html = HTML(html)
