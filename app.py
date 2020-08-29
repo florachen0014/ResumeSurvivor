@@ -15,30 +15,6 @@ import resume_matching
 import indeed_job_scraper as indeed
 
 app = Flask(__name__)
-# app.config['SECRET_KEY'] = 'I have a dream'
-# app.config['UPLOADED_DOCUMENTS_DEST'] = './'
-# filename="single-resume.csv"
-
-# documents = UploadSet('documents', ALL)
-# configure_uploads(app, documents)
-# patch_request_class(app)  # set maximum file size, default is 16MB
-
-
-
-# class UploadForm(FlaskForm):
-#     document = FileField(validators=[FileRequired()])
-#     submit = SubmitField(u'Upload')
-
-@app.route("/download/<path:path>")
-def download(path):
-    """Serve a file from the upload directory."""
-    return send_from_directory(UPLOAD_DIRECTORY, path, as_attachment=True)
-
-def file_download_link(filename):
-    """Create a Plotly Dash 'A' element sthat downloads a file from the app."""
-    location = "/download/{}".format(urlquote(filename))
-    return html.A(filename, href=location)
-
      
 @app.route('/', methods=['GET', 'POST'])
 def main():
